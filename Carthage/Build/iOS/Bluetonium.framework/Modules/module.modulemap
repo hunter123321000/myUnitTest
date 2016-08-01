@@ -1,0 +1,10 @@
+framework module Bluetonium {
+  umbrella header "Bluetonium.h"
+
+  export *
+  module * { export * }
+}
+
+module Bluetonium.Swift {
+    header "Bluetonium-Swift.h"
+}
