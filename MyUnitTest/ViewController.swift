@@ -9,8 +9,9 @@
 import UIKit
 import ToastSwiftFramework
 import Bluetonium
+import WatchConnectivity
 
-class ViewController: UIViewController, ManagerDelegate {
+class ViewController: UIViewController, ManagerDelegate, WCSessionDelegate {
     lazy var btManager: Manager = {
         let manager = Manager(background: true)
         manager.delegate = self
@@ -19,6 +20,9 @@ class ViewController: UIViewController, ManagerDelegate {
     @IBOutlet weak var btn_showtoast: UIButton!
     @IBOutlet weak var lb_device: UILabel!
     @IBOutlet weak var btn_connect: UIButton!
+    @IBOutlet weak var lb_receive: UILabel!
+    
+    var session :WCSession!
     
     override func viewDidLoad() {
         btn_showtoast.backgroundColor = UIColor.clearColor()
@@ -27,6 +31,11 @@ class ViewController: UIViewController, ManagerDelegate {
         btn_showtoast.layer.borderColor = UIColor.blackColor().CGColor
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        if (WCSession.isSupported()) {
+            session = WCSession.defaultSession()
+            session.delegate = self;
+            session.activateSession()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -61,11 +70,34 @@ class ViewController: UIViewController, ManagerDelegate {
                 btManager.disconnectFromDevice()
                 sender.setTitle("Connect", forState: UIControlState.Normal)
             }
+        case "sendWatch":
+            let sendmsg  = ["Value":"I am iPhone"]
+            session.sendMessage(sendmsg, replyHandler: { replyMessage in
+                //handle the reply
+                let value = replyMessage["Value"] as? String
+                //use dispatch_asynch to present immediately on screen
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.lb_receive.text = value
+                }
+                }, errorHandler: {error in
+                    // catch any errors here
+                    print(error)
+            })
         default:
             self.view.makeToast("oh~~~~")
         }
     }
 
+    func session(session: WCSession, didReceiveMessage message: [String : AnyObject], replyHandler: ([String : AnyObject]) -> Void) {
+        //handle received message
+        let value = message["Value"] as? String
+        dispatch_async(dispatch_get_main_queue()) {
+            self.lb_receive.text = value
+        }
+        //send a reply
+        replyHandler(["Value":"Hello, Happy Watch"])
+    }
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         var secondview:SecondViewController = segue.destinationViewController as! SecondViewController
         secondview.strReceive = sender!.currentTitle!!

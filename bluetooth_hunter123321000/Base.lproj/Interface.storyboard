@@ -10,9 +10,15 @@
             <objects>
                 <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="bluetooth_hunter123321000" customModuleProvider="target">
                     <items>
-                        <label width="136" height="162.5" alignment="left" text="Waiting" textAlignment="center" id="r5e-Ga-OfI"/>
+                        <label width="136" height="119" alignment="left" text="Waiting" textAlignment="center" id="r5e-Ga-OfI"/>
+                        <button width="1" alignment="left" title="Send" id="ccK-Rx-rei">
+                            <connections>
+                                <action selector="sendMessage" destination="AgC-eL-Hgc" id="TYK-Ye-JVi"/>
+                            </connections>
+                        </button>
                     </items>
                     <connections>
+                        <outlet property="btn_sendmsg" destination="ccK-Rx-rei" id="RZ1-Sv-T7M"/>
                         <outlet property="wt_lb" destination="r5e-Ga-OfI" id="efx-5h-cwQ"/>
                     </connections>
                 </controller>
